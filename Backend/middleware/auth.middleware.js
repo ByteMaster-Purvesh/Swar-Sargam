@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken')
-const connectToRedis = require('../config/cache.Config')
+const redisInstance = require('../config/cache.Config')
 
 
 const authUser = async ( req, res, next ) => {
@@ -11,9 +11,7 @@ const authUser = async ( req, res, next ) => {
         })
     }
 
-    const isTokenIsBlacklisted = await blaklistMole.findOne({
-        token
-    })
+    const isTokenIsBlacklisted = await redisInstance.get(token)
 
     if( isTokenIsBlacklisted ){
         return res.status(401).json({

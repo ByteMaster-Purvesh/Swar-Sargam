@@ -4,6 +4,7 @@ const blacklist = require('../module/blackListing.module')
 const userModule = require('../module/user.module')
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
+const redisInstance = require('../config/cache.Config')
 
 const userRegistration = async ( req, res ) => {
     const { username, email, password } = req.body
@@ -54,7 +55,7 @@ const userRegistration = async ( req, res ) => {
 
 const userLogin = async ( req, res ) => {
     const { username, email, password } = req.body
-    
+
     const isUserExist = await userModule.findOne({ 
         $or: [
             { username: username },
@@ -113,9 +114,7 @@ const userLogout = async ( req, res ) => {
 
     res.clearCookie = token
     
-    const blacklistToken = await blacklist.create({
-        token: token
-    })
+    const blacklistToken = await redisInstance.set(token, Date.now().toString())
 
     res.status(200).json({
         message: 'Token is blacklisted and User Logout successfuly',

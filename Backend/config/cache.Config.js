@@ -11,7 +11,7 @@ try {
     console.log(' Redis is connected successfully!')
 })
 } catch (error) {
-    console.log(' Redis is faccing an error: ', error)
+    console.log(' Redis is faceing an error: ', error)
 }
 
 module.exports = redisInstance
