@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken')
-const blaklistMole = require('../module/blackListing.module')
+const connectToRedis = require('../config/cache.Config')
 
 
 const authUser = async ( req, res, next ) => {
@@ -24,8 +24,8 @@ const authUser = async ( req, res, next ) => {
     try{
         const decoded = await jwt.verify( token, process.env.JWT_SECRET_TOKEN)
         req.user = decoded
+
         next()
-    
     } catch(error){
         console.log('Token is not matching : ', error)
     }
