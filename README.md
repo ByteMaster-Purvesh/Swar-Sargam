@@ -1,8 +1,8 @@
-# 🎵 TriNaad (Swar-Sargam)
+# 🎵 Swar-Sargam
 
 ## AI-Powered Emotion-Aware Music Recommendation Platform
 
-**TriNaad** is an AI-powered music recommendation platform that uses real-time facial analysis to identify a user's emotional state and deliver personalized music recommendations accordingly.
+**Swar-Sargam** is an AI-powered music recommendation platform that uses real-time facial analysis to identify a user's emotional state and deliver personalized music recommendations accordingly.
 
 Built with **Google MediaPipe, TensorFlow.js, MERN Stack (MongoDB, Express, React, Node.js), and Redis Cloud**, the platform combines AI-based emotion detection with a modern full-stack architecture to create an interactive and personalized music experience.
 
@@ -22,7 +22,7 @@ Built with **Google MediaPipe, TensorFlow.js, MERN Stack (MongoDB, Express, Reac
 
 ## 🧠 Supported Emotions
 
-TriNaad currently recognizes three primary emotional states:
+Swar-Sargam currently recognizes three primary emotional states:
 
 | Emotion      | Recommendation             |
 | ------------ | -------------------------- |
@@ -99,7 +99,7 @@ The detected emotion is used to dynamically generate relevant music recommendati
 ## 📁 Project Structure
 
 ```text
-Swar-Sargam/ (TriNaad)
+Swar-Sargam/
 │
 ├── Frontend/
 │   ├── src/
@@ -156,7 +156,7 @@ Swar-Sargam/ (TriNaad)
 | `POST` | `/api/auth/logout` | Logout user & blacklist JWT token in Redis | Yes (`Cookie`) |
 
 ### Token Blacklisting Mechanism
-TriNaad uses **Redis Cloud** to manage token invalidation. On logout, the token is stored in Redis. Subsequent requests with a blacklisted token are intercepted and rejected by `auth.middleware.js` before reaching any protected controller.
+Swar-Sargam uses **Redis Cloud** to manage token invalidation. On logout, the token is stored in Redis. Subsequent requests with a blacklisted token are intercepted and rejected by `auth.middleware.js` before reaching any protected controller.
 
 ---
 
@@ -215,7 +215,7 @@ http://localhost:5173
 
 ## 📈 Engineering Highlights
 
-TriNaad demonstrates:
+Swar-Sargam demonstrates:
 
 * 🤖 Integration of **AI / Computer Vision** into web applications for real-time expression detection.
 * 🎭 Dynamic emotion-to-audio recommendation mapping.
@@ -237,6 +237,6 @@ Full Stack Developer focused on building scalable, AI-powered web applications.
 
 ## ⭐ Support
 
-If you find **TriNaad** interesting or useful, consider starring the repository and exploring the project.
+If you find **Swar-Sargam** interesting or useful, consider starring the repository and exploring the project.
 
-**TriNaad — Turning emotions into music. 🎵**
+**Swar-Sargam — Turning emotions into music. 🎵**
