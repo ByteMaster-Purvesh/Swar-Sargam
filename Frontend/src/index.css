@@ -1,0 +1,369 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap');
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* Modern Custom Cursor setup for desktop pointers */
+@media (pointer: fine) {
+  body, button, a, [role="button"], .track-list-row {
+    cursor: none !important;
+  }
+}
+
+:root {
+  --bg-gradient: radial-gradient(circle at 20% 20%, #1e1b24 0%, #13141a 50%, #0b0c10 100%);
+  --app-bg: rgba(18, 19, 24, 0.85);
+  --modal-solid-bg: #111625;
+  --glass-bg: rgba(255, 255, 255, 0.05);
+  --glass-border: rgba(255, 255, 255, 0.12);
+  --glass-hover: rgba(255, 255, 255, 0.09);
+  --glass-pill: rgba(255, 255, 255, 0.08);
+  --text-primary: #ffffff;
+  --text-secondary: #9da3b4;
+  --text-muted: #646b7c;
+  --accent-orange: #ff6b35;
+  --accent-amber: #e5a93c;
+  --accent-cyan: #3cd4a0;
+  --accent-purple: #9d50bb;
+  --accent-pink: #d84315;
+  --card-shadow: none;
+  --glow-orange: 0 0 15px rgba(255, 107, 53, 0.25);
+  --glow-green: 0 0 15px rgba(60, 212, 160, 0.2);
+}
+
+[data-theme='light'] {
+  --bg-gradient: radial-gradient(circle at 20% 20%, #f8fafc 0%, #e2e8f0 40%, #cbd5e1 100%);
+  --app-bg: rgba(248, 250, 252, 0.85);
+  --modal-solid-bg: #ffffff;
+  --glass-bg: rgba(255, 255, 255, 0.7);
+  --glass-border: rgba(255, 255, 255, 0.9);
+  --glass-hover: rgba(255, 255, 255, 0.85);
+  --glass-pill: rgba(255, 255, 255, 0.8);
+  --text-primary: #0f172a;
+  --text-secondary: #334155;
+  --text-muted: #64748b;
+  --accent-orange: #f97316;
+  --accent-amber: #d97706;
+  --accent-cyan: #10b981;
+  --accent-purple: #8b5cf6;
+  --accent-pink: #ec4899;
+  --card-shadow: none;
+  --glow-orange: 0 0 15px rgba(249, 115, 22, 0.2);
+  --glow-green: 0 0 15px rgba(16, 185, 129, 0.2);
+}
+
+body {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  background: var(--bg-gradient);
+  color: var(--text-primary);
+  height: 100vh;
+  width: 100vw;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+#root {
+  width: 100%;
+  height: 100vh;
+  display: flex;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  display: none;
+}
+
+/* Glass Utility Classes */
+.imax-glass-container {
+  background: var(--app-bg);
+  backdrop-filter: blur(40px) saturate(180%);
+  -webkit-backdrop-filter: blur(40px) saturate(180%);
+  border: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  outline: none !important;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  overflow: hidden;
+  position: relative;
+  transition: all 0.3s ease;
+  padding: 16px !important;
+}
+
+.imax-glass-card {
+  background: var(--glass-bg);
+  backdrop-filter: blur(28px) saturate(180%);
+  -webkit-backdrop-filter: blur(28px) saturate(180%);
+  border: 1px solid var(--glass-border);
+  border-radius: 28px;
+  box-shadow: none !important;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.imax-glass-card:hover {
+  background: var(--glass-hover);
+  border-color: var(--glass-border);
+}
+
+.imax-glass-pill {
+  background: var(--glass-pill);
+  backdrop-filter: blur(28px) saturate(180%);
+  -webkit-backdrop-filter: blur(28px) saturate(180%);
+  border: 1px solid var(--glass-border);
+  border-radius: 24px;
+  box-shadow: none !important;
+}
+
+.glow-orange-text {
+  color: var(--accent-orange);
+  text-shadow: 0 0 12px rgba(255, 107, 53, 0.4);
+}
+
+/* Biometric Scan Overlay */
+@keyframes scanline {
+  0% {
+    top: 0%;
+  }
+  50% {
+    top: 95%;
+  }
+  100% {
+    top: 0%;
+  }
+}
+
+.scan-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, #ff6b35, #3cd4a0, transparent);
+  box-shadow: 0 0 15px #ff6b35, 0 0 25px #3cd4a0;
+  animation: scanline 3s ease-in-out infinite;
+}
+
+/* Audio Visualizer Equalizer Bar Animations */
+@keyframes barPulse {
+  0%, 100% {
+    height: 6px;
+  }
+  50% {
+    height: 28px;
+  }
+}
+
+.eq-bar {
+  width: 3px;
+  background: linear-gradient(180deg, var(--accent-orange), var(--accent-amber));
+  border-radius: 3px;
+  animation: barPulse 1.2s ease-in-out infinite;
+}
+
+.eq-bar:nth-child(2n) {
+  animation-delay: 0.2s;
+  background: linear-gradient(180deg, var(--accent-cyan), var(--accent-amber));
+}
+.eq-bar:nth-child(3n) {
+  animation-delay: 0.4s;
+  background: linear-gradient(180deg, var(--accent-purple), var(--accent-orange));
+}
+.eq-bar:nth-child(4n) {
+  animation-delay: 0.1s;
+}
+
+/* Scrolling Text Marquee Animation */
+@keyframes marqueeScroll {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.marquee-container {
+  overflow: hidden;
+  white-space: nowrap;
+  position: relative;
+  width: 100%;
+  mask-image: linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%);
+}
+
+.marquee-content {
+  display: inline-flex;
+  gap: 32px;
+  animation: marqueeScroll 14s linear infinite;
+}
+
+/* ==========================================================================
+/* ==========================================================================
+   ULTRA-PROFESSIONAL IMAX RESPONSIVE DESIGN (HCI & Multi-Device Breakpoints)
+   - Tier 1: Big Monitors & Ultra-wides (min-width: 1440px)
+   - Tier 2: Laptops & Desktops (1024px - 1439px)
+   - Tier 3: Tablets & iPads (768px - 1023px)
+   - Tier 4: Mobile Devices (max-width: 767px)
+   ========================================================================== */
+
+/* Tier 1: Ultra-Wide & Large Monitors (min-width: 1440px) */
+@media (min-width: 1440px) {
+  .imax-glass-container {
+    max-width: 1600px !important;
+    margin: 0 auto !important;
+    padding: 32px !important;
+    border-radius: 40px !important;
+  }
+}
+
+/* Tier 2: Laptops & Medium Screens (max-width: 1200px) */
+@media (max-width: 1200px) {
+  .main-hero-grid {
+    grid-template-columns: 1fr !important;
+    gap: 20px !important;
+  }
+
+  .expression-analytics-card {
+    grid-template-columns: 1fr 1fr !important;
+  }
+}
+
+/* Tier 3: Tablets & iPads (max-width: 1024px) */
+@media (max-width: 1024px) {
+  .imax-glass-container {
+    flex-direction: column !important;
+    border-radius: 28px !important;
+    padding: 20px !important;
+    min-height: auto !important;
+  }
+
+  .left-dock-aside {
+    width: 100% !important;
+    height: auto !important;
+    flex-direction: row !important;
+    padding: 12px 20px !important;
+    margin-right: 0 !important;
+    margin-bottom: 20px !important;
+    border-radius: 24px !important;
+  }
+
+  .left-dock-aside .dock-inner-top {
+    flex-direction: row !important;
+    gap: 16px !important;
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .left-dock-aside .dock-nav-icons {
+    flex-direction: row !important;
+    gap: 10px !important;
+  }
+
+  .left-dock-aside .dock-inner-bottom {
+    flex-direction: row !important;
+    gap: 12px !important;
+  }
+
+  .main-hero-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .track-list-header {
+    grid-template-columns: 2.2fr 1fr 50px !important;
+  }
+
+  .track-list-header span:nth-child(3) {
+    display: none !important;
+  }
+
+  .track-list-row {
+    grid-template-columns: 2.2fr 1fr 50px !important;
+  }
+
+  .track-list-row .singer-details-col {
+    display: none !important;
+  }
+}
+
+/* Tier 4: Mobile & Small Tablets (max-width: 768px) */
+@media (max-width: 768px) {
+  body {
+    padding: 8px;
+  }
+
+  .imax-glass-container {
+    padding: 14px !important;
+    border-radius: 22px !important;
+  }
+
+  .app-header {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 14px !important;
+  }
+
+  .app-header h1 {
+    font-size: 22px !important;
+  }
+
+  .hero-card-banner {
+    padding: 24px !important;
+    height: auto !important;
+    min-height: 420px !important;
+  }
+
+  .hero-stats-pill {
+    grid-template-columns: repeat(2, 1fr) !important;
+    padding: 14px 18px !important;
+  }
+
+  .hero-stats-pill .pill-arrow-btn {
+    display: none !important;
+  }
+
+  .expression-analytics-card {
+    grid-template-columns: 1fr !important;
+    gap: 20px !important;
+  }
+
+  .track-list-header {
+    display: none !important;
+  }
+
+  .track-list-row {
+    grid-template-columns: 1fr !important;
+    gap: 10px !important;
+    position: relative !important;
+    padding: 14px 56px 14px 16px !important;
+  }
+
+  .track-list-row .like-btn-col {
+    position: absolute !important;
+    right: 16px !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+  }
+
+  .music-player-bar {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 16px !important;
+    padding: 16px !important;
+  }
+
+  .music-player-bar .player-track-info {
+    width: 100% !important;
+  }
+
+  .music-player-bar .player-volume-box {
+    width: 100% !important;
+  }
+
+  .imax-glass-card {
+    flex-direction: column !important;
+  }
+}
