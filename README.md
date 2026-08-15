@@ -244,7 +244,7 @@ TriNaad demonstrates the integration of:
 
 ## 👨‍💻 Author
 
-### Rishabh Jagtap
+### Purvesh Somwanshi
 
 Full Stack Developer focused on building scalable, AI-powered web applications.
 
