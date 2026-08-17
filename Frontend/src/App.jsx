@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Routes, Route, Link, useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import FaceScannerModal from './features/expression/pages/FaceScannerModal';
-import LoginPage from './features/expression/pages/LoginPage';
-import RegistrationPage from './features/expression/pages/RegistrationPage';
+import LoginPage from './features/auth/pages/LoginPage';
+import RegistrationPage from './features/auth/pages/RegistrationPage';
 import CustomCursor from './features/CustomCursor';
 import {
   BarChart3,
@@ -38,9 +38,10 @@ import {
   Flame,
   Maximize2
 } from 'lucide-react';
-import './index.css';
 import RouteComponent from './features/routes/Route';
 import { AuthProvider } from './features/auth/context/auth.Context';
+import { saveExpressionApi } from './features/auth/service/authAPI.service';
+import { useAuthHook } from './features/auth/hook/useAuthHook';
 
 import img1 from './assets/Herosection/1.jpg';
 import img2 from './assets/Herosection/2.jpg';
@@ -52,8 +53,6 @@ import img7 from './assets/Herosection/7.jpg';
 import img8 from './assets/Herosection/8.jpg';
 import img9 from './assets/Herosection/9.jpg';
 import img10 from './assets/Herosection/10.jpg';
-import { AuthProvider } from './features/auth/context/auth.Context';
-
 const HERO_IMAGES = [img1, img2, img3, img4, img5, img6, img7, img8, img9, img10];
 
 // Custom Interactive Fluid Hover Fill Button
@@ -163,7 +162,9 @@ const SONGS_BY_EMOTION = {
   ]
 };
 
-function MainDashboardApp() {
+export function MainDashboardApp() {
+  const { user, handleLogout } = useAuthHook();
+  const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(() => {
     try {
       return Boolean(localStorage.getItem('token') || localStorage.getItem('user'));
@@ -171,6 +172,8 @@ function MainDashboardApp() {
       return false;
     }
   });
+
+  const isAuthenticated = Boolean(user || isLoggedIn || localStorage.getItem('token') || localStorage.getItem('user'));
 
   useEffect(() => {
     const handleAuthChange = () => {
@@ -198,6 +201,27 @@ function MainDashboardApp() {
   const [audioWavePhase, setAudioWavePhase] = useState(0);
   const [likedSongs, setLikedSongs] = useState({ 1: true, 2: true });
   const [hasNotice, setHasNotice] = useState(true);
+
+  const handleCapture = async (scanData) => {
+    const { emotion, confidence, image } = scanData || {};
+    if (emotion) setDetectedEmotion(emotion);
+    if (confidence) setConfidence(Number(confidence));
+    if (image) setScannedFacePhoto(image);
+    if (emotion && SONGS_BY_EMOTION[emotion]) {
+      setCurrentTrack(SONGS_BY_EMOTION[emotion][0]);
+    }
+
+    try {
+      await saveExpressionApi({
+        emotion: emotion || 'Happy',
+        confidence: Number(confidence) || 95,
+        blendshapeScores: { emotion }
+      });
+      console.log("Saved expression scan to database successfully!");
+    } catch (err) {
+      console.error('Failed to save expression to database:', err);
+    }
+  };
 
   const toggleMute = () => {
     if (Number(volume) > 0) {
@@ -523,31 +547,117 @@ function MainDashboardApp() {
               <Search size={18} />
             </button>
 
-            {!isLoggedIn ? (
+            {!isAuthenticated ? (
               <Link to="/login" style={{
-                padding: '6px 16px', borderRadius: '20px',
+                padding: '8px 18px', borderRadius: '20px',
                 background: 'var(--accent-orange)', border: '1px solid var(--accent-orange)',
-                color: '#fff', fontSize: '12px', fontWeight: 700, textDecoration: 'none',
-                whiteSpace: 'nowrap', boxShadow: 'var(--glow-orange)', transition: 'all 0.2s ease'
+                color: '#fff', fontSize: '13px', fontWeight: 700, textDecoration: 'none',
+                whiteSpace: 'nowrap', boxShadow: 'var(--glow-orange)', transition: 'all 0.2s ease',
+                display: 'inline-flex', alignItems: 'center', gap: '6px'
               }}>
+                <User size={15} />
                 Sign In
               </Link>
             ) : (
-              /* Profile Avatar (Visible when logged in) */
-              <div style={{
-                width: '40px',
-                height: '40px',
-                borderRadius: '50%',
-                overflow: 'hidden',
-                border: '2px solid var(--accent-orange)',
-                cursor: 'pointer',
-                flexShrink: 0
-              }} title="Logged In User Profile">
-                <img
-                  src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80"
-                  alt="Profile"
-                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                />
+              /* Profile Menu Dropdown (Visible when logged in) */
+              <div style={{ position: 'relative' }}>
+                <button
+                  onClick={() => setShowProfileMenu(!showProfileMenu)}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    padding: '4px 14px 4px 6px',
+                    borderRadius: '24px',
+                    background: 'var(--glass-pill)',
+                    border: '1px solid var(--accent-orange)',
+                    color: 'var(--text-primary)',
+                    cursor: 'pointer',
+                    fontSize: '13px',
+                    fontWeight: 600,
+                    boxShadow: 'var(--glow-orange)'
+                  }}
+                  title="Profile Options"
+                >
+                  <div style={{
+                    width: '32px',
+                    height: '32px',
+                    borderRadius: '50%',
+                    background: 'linear-gradient(135deg, var(--accent-orange), #f97316)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    color: '#ffffff',
+                    fontWeight: 700
+                  }}>
+                    {user?.username ? user.username.charAt(0).toUpperCase() : <User size={18} />}
+                  </div>
+                  <span>{user?.username || 'Profile'}</span>
+                  <ChevronDown size={14} color="var(--text-muted)" />
+                </button>
+
+                <AnimatePresence>
+                  {showProfileMenu && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                      transition={{ duration: 0.2 }}
+                      style={{
+                        position: 'absolute',
+                        right: 0,
+                        top: '48px',
+                        width: '200px',
+                        background: 'var(--modal-solid-bg, #13141a)',
+                        border: '1px solid var(--glass-border)',
+                        borderRadius: '16px',
+                        padding: '8px',
+                        boxShadow: '0 10px 30px rgba(0,0,0,0.5)',
+                        zIndex: 100
+                      }}
+                    >
+                      <div style={{ padding: '10px 12px', borderBottom: '1px solid var(--glass-border)', marginBottom: '4px' }}>
+                        <p style={{ fontSize: '13px', fontWeight: 700, margin: 0, color: 'var(--text-primary)' }}>
+                          {user?.username || 'Logged In User'}
+                        </p>
+                        {user?.email && (
+                          <p style={{ fontSize: '11px', color: 'var(--text-muted)', margin: '2px 0 0 0', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                            {user.email}
+                          </p>
+                        )}
+                      </div>
+
+                      <button
+                        onClick={async () => {
+                          setShowProfileMenu(false);
+                          setIsLoggedIn(false);
+                          localStorage.removeItem('token');
+                          localStorage.removeItem('user');
+                          localStorage.removeItem('isGuest');
+                          await handleLogout();
+                        }}
+                        style={{
+                          width: '100%',
+                          padding: '8px 12px',
+                          borderRadius: '10px',
+                          border: 'none',
+                          background: 'transparent',
+                          color: '#f87171',
+                          fontSize: '13px',
+                          fontWeight: 600,
+                          cursor: 'pointer',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '8px',
+                          textAlign: 'left'
+                        }}
+                      >
+                        <User size={15} />
+                        Logout
+                      </button>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
             )}
           </div>
@@ -1371,6 +1481,11 @@ function MainDashboardApp() {
 
       </div>
 
+      <FaceScannerModal
+        isScanning={isScanning}
+        onCapture={handleCapture}
+        onClose={() => setIsScanning(false)}
+      />
     </div>
   );
 }
