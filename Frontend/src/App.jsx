@@ -1,16 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { Routes, Route, Link, useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import FaceScannerModal from './features/FaceScannerModal';
-import LoginPage from './features/LoginPage';
-import RegistrationPage from './features/RegistrationPage';
+import FaceScannerModal from './features/expression/pages/FaceScannerModal';
+import LoginPage from './features/expression/pages/LoginPage';
+import RegistrationPage from './features/expression/pages/RegistrationPage';
 import CustomCursor from './features/CustomCursor';
 import {
   BarChart3,
   FileText,
   TrendingUp,
   Wallet,
-  Compass,
   ShoppingBag,
   Bell,
   Settings,
@@ -100,18 +99,18 @@ function FluidScanButton({ onClick }) {
       style={{
         position: 'relative',
         overflow: 'hidden',
-        padding: '18px 36px',
-        minHeight: '58px',
+        padding: '12px 24px',
+        minHeight: '46px',
         borderRadius: '99px',
         background: 'var(--glass-pill)',
         border: fluidPos.hovered ? '1px solid var(--accent-orange)' : '1px solid var(--glass-border)',
         color: fluidPos.hovered ? '#ffffff' : 'var(--text-primary)',
         fontWeight: 700,
-        fontSize: '16px',
+        fontSize: '14px',
         cursor: 'pointer',
         display: 'inline-flex',
         alignItems: 'center',
-        gap: '12px',
+        gap: '10px',
         transition: 'color 0.35s ease, border-color 0.35s ease'
       }}
     >
@@ -131,8 +130,8 @@ function FluidScanButton({ onClick }) {
           zIndex: 1
         }}
       />
-      <span style={{ position: 'relative', zIndex: 2, display: 'inline-flex', alignItems: 'center', gap: '12px' }}>
-        <Camera size={20} color={fluidPos.hovered ? '#ffffff' : 'var(--accent-orange)'} style={{ transition: 'color 0.35s ease' }} />
+      <span style={{ position: 'relative', zIndex: 2, display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+        <Camera size={18} color={fluidPos.hovered ? '#ffffff' : 'var(--accent-orange)'} style={{ transition: 'color 0.35s ease' }} />
         Scan Face & Sync Mood
       </span>
     </motion.button>
@@ -162,6 +161,21 @@ const SONGS_BY_EMOTION = {
 };
 
 function MainDashboardApp() {
+  const [isLoggedIn, setIsLoggedIn] = useState(() => {
+    try {
+      return Boolean(localStorage.getItem('token') || localStorage.getItem('user'));
+    } catch {
+      return false;
+    }
+  });
+
+  useEffect(() => {
+    const handleAuthChange = () => {
+      setIsLoggedIn(!!localStorage.getItem('token') || !!localStorage.getItem('user'));
+    };
+    window.addEventListener('storage', handleAuthChange);
+    return () => window.removeEventListener('storage', handleAuthChange);
+  }, []);
   const [theme, setTheme] = useState('dark');
   const [activeNav, setActiveNav] = useState('analytics');
   const [isScanning, setIsScanning] = useState(false);
@@ -176,9 +190,11 @@ function MainDashboardApp() {
   const totalDurationSec = 225; // 03:45 total track length
   const [volume, setVolume] = useState(80);
   const [prevVolume, setPrevVolume] = useState(80);
+  const [showVolumeSlider, setShowVolumeSlider] = useState(false);
   const [heroImageIndex, setHeroImageIndex] = useState(0);
   const [audioWavePhase, setAudioWavePhase] = useState(0);
-  const [likedSongs, setLikedSongs] = useState({});
+  const [likedSongs, setLikedSongs] = useState({ 1: true, 2: true });
+  const [hasNotice, setHasNotice] = useState(true);
 
   const toggleMute = () => {
     if (Number(volume) > 0) {
@@ -374,7 +390,6 @@ function MainDashboardApp() {
               { id: 'playlist', icon: FileText },
               { id: 'scanner', icon: Camera },
               { id: 'wallet', icon: Wallet },
-              { id: 'discover', icon: Compass },
               { id: 'shop', icon: ShoppingBag }
             ].map((item) => {
               const Icon = item.icon;
@@ -421,17 +436,28 @@ function MainDashboardApp() {
 
         {/* Bottom Actions: Notifications & Settings */}
         <div className="dock-inner-bottom" style={{ display: 'flex', flexDirection: 'column', gap: '16px', alignItems: 'center' }}>
-          <button style={{
-            width: '44px', height: '44px', borderRadius: '14px', border: 'none',
-            background: 'transparent', color: 'var(--text-muted)', display: 'flex',
-            alignItems: 'center', justifyContent: 'center', cursor: 'pointer', position: 'relative'
-          }}>
-            <Bell size={20} />
-            <span style={{
-              position: 'absolute', top: '10px', right: '10px', width: '8px', height: '8px',
-              borderRadius: '50%', background: '#ff6b35', boxShadow: '0 0 8px #ff6b35'
-            }} />
-          </button>
+          <motion.button
+            whileHover={{ scale: 1.15 }}
+            whileTap={{ scale: 0.9 }}
+            onClick={() => setHasNotice(!hasNotice)}
+            title={hasNotice ? "New notification pending (Click to mark as read)" : "No new notifications"}
+            style={{
+              width: '44px',
+              height: '44px',
+              borderRadius: '14px',
+              border: 'none',
+              background: hasNotice ? 'rgba(255, 107, 53, 0.12)' : 'transparent',
+              color: hasNotice ? 'var(--accent-orange)' : 'var(--text-muted)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer',
+              boxShadow: hasNotice ? '0 0 14px rgba(255, 107, 53, 0.3)' : 'none',
+              transition: 'all 0.25s ease'
+            }}
+          >
+            <Bell size={20} fill={hasNotice ? 'var(--accent-orange)' : 'none'} color={hasNotice ? 'var(--accent-orange)' : 'var(--text-muted)'} />
+          </motion.button>
 
           <button style={{
             width: '44px', height: '44px', borderRadius: '14px', border: 'none',
@@ -444,18 +470,18 @@ function MainDashboardApp() {
       </motion.aside>
 
       {/* MAIN MAIN CONTENT CONTAINER */}
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '24px', overflowY: 'auto', padding: '0 36px 36px 16px', width: '100%', maxWidth: '1600px', margin: '0 auto' }}>
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '16px', padding: '0 16px 16px 16px', width: '100%', minWidth: 0 }}>
 
         {/* HEADER BAR */}
         <header className="app-header" style={{
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
-          padding: '12px 16px'
+          padding: '8px 12px'
         }}>
           <div>
             <h1 style={{
-              fontSize: '32px',
+              fontSize: '28px',
               fontWeight: 700,
               letterSpacing: '-0.5px',
               color: 'var(--text-primary)'
@@ -464,15 +490,15 @@ function MainDashboardApp() {
             </h1>
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+          <div className="header-actions-group" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
             {/* Theme Toggle Button */}
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={toggleTheme}
               style={{
-                width: '42px',
-                height: '42px',
+                width: '40px',
+                height: '40px',
                 borderRadius: '50%',
                 border: '1px solid var(--glass-border)',
                 background: 'var(--glass-pill)',
@@ -487,49 +513,45 @@ function MainDashboardApp() {
             </motion.button>
 
             <button style={{
-              width: '42px', height: '42px', borderRadius: '50%', border: '1px solid var(--glass-border)',
-              background: 'var(--glass-pill)', color: 'var(--text-primary)', display: 'flex',
-              alignItems: 'center', justifyContent: 'center', cursor: 'pointer'
-            }}>
-              <Mail size={18} />
-            </button>
-
-            <button style={{
-              width: '42px', height: '42px', borderRadius: '50%', border: '1px solid var(--glass-border)',
+              width: '40px', height: '40px', borderRadius: '50%', border: '1px solid var(--glass-border)',
               background: 'var(--glass-pill)', color: 'var(--text-primary)', display: 'flex',
               alignItems: 'center', justifyContent: 'center', cursor: 'pointer'
             }}>
               <Search size={18} />
             </button>
 
-            <Link to="/login" style={{
-              padding: '8px 16px', borderRadius: '20px',
-              background: 'var(--glass-pill)', border: '1px solid var(--glass-border)',
-              color: 'var(--text-primary)', fontSize: '13px', fontWeight: 700, textDecoration: 'none'
-            }}>
-              Sign In
-            </Link>
-
-            {/* Profile Avatar */}
-            <div style={{
-              width: '42px',
-              height: '42px',
-              borderRadius: '50%',
-              overflow: 'hidden',
-              border: '2px solid var(--accent-orange)',
-              cursor: 'pointer'
-            }}>
-              <img
-                src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80"
-                alt="Profile"
-                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-              />
-            </div>
+            {!isLoggedIn ? (
+              <Link to="/login" style={{
+                padding: '6px 16px', borderRadius: '20px',
+                background: 'var(--accent-orange)', border: '1px solid var(--accent-orange)',
+                color: '#fff', fontSize: '12px', fontWeight: 700, textDecoration: 'none',
+                whiteSpace: 'nowrap', boxShadow: 'var(--glow-orange)', transition: 'all 0.2s ease'
+              }}>
+                Sign In
+              </Link>
+            ) : (
+              /* Profile Avatar (Visible when logged in) */
+              <div style={{
+                width: '40px',
+                height: '40px',
+                borderRadius: '50%',
+                overflow: 'hidden',
+                border: '2px solid var(--accent-orange)',
+                cursor: 'pointer',
+                flexShrink: 0
+              }} title="Logged In User Profile">
+                <img
+                  src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80"
+                  alt="Profile"
+                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                />
+              </div>
+            )}
           </div>
         </header>
 
         {/* HERO SECTION + TOP RIGHT WIDGETS GRID */}
-        <div className="main-hero-grid" style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 2.4fr) minmax(0, 1.5fr)', gap: '24px', alignItems: 'stretch', padding: '0 16px' }}>
+        <div className="main-hero-grid" style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 2.4fr) minmax(0, 1.5fr)', gap: '24px', alignItems: 'stretch', width: '100%' }}>
 
           {/* HERO BANNER CARD WITH CHARACTER */}
           <motion.div
@@ -619,7 +641,9 @@ function MainDashboardApp() {
                 </span>
               </h2>
 
-              <FluidScanButton onClick={triggerExpressionScan} />
+              <div style={{ marginBottom: '24px' }}>
+                <FluidScanButton onClick={triggerExpressionScan} />
+              </div>
             </div>
 
             {/* Live MediaPipe Camera & Face Scanner Modal */}
@@ -707,24 +731,20 @@ function MainDashboardApp() {
             >
               {/* Header Bar */}
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', zIndex: 2 }}>
-                <span style={{ fontSize: '14px', fontWeight: 700, color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span style={{ fontSize: '14px', fontWeight: 700, color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '6px' }}>
                   <Music size={18} color="var(--accent-orange)" />
-                  Now Playing Showcase
                   <span style={{
-                    fontSize: '10px',
-                    padding: '2px 8px',
-                    borderRadius: '12px',
-                    background: isPlaying ? 'rgba(255, 107, 53, 0.2)' : 'var(--glass-pill)',
-                    color: isPlaying ? 'var(--accent-orange)' : 'var(--text-muted)',
-                    fontWeight: 700,
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '4px',
-                    border: '1px solid var(--glass-border)'
-                  }}>
-                    <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: isPlaying ? 'var(--accent-orange)' : 'var(--text-muted)' }} />
-                    {isPlaying ? 'LIVE' : 'PAUSED'}
-                  </span>
+                    width: '8px',
+                    height: '8px',
+                    borderRadius: '50%',
+                    background: isPlaying ? '#10b981' : '#646b7c',
+                    boxShadow: isPlaying ? '0 0 8px #10b981' : 'none',
+                    display: 'inline-block',
+                    flexShrink: 0,
+                    marginRight: '2px',
+                    transition: 'all 0.3s ease'
+                  }} title={isPlaying ? 'Live Active' : 'Paused'} />
+                  Now Playing Showcase
                 </span>
                 <span style={{ fontSize: '12px', color: 'var(--accent-orange)', fontWeight: 700 }}>
                   Mood: {detectedEmotion} ({confidence}%)
@@ -1012,9 +1032,9 @@ function MainDashboardApp() {
         </div>
 
         {/* BOTTOM SECTION: SONG RECOMMENDATIONS & MUSIC PLAYER */}
-        <div className="imax-glass-card" style={{ padding: '24px', margin: '0 16px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+        <div className="imax-glass-card" style={{ padding: '24px', width: '100%', display: 'flex', flexDirection: 'column', gap: '20px' }}>
 
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div className="recommendations-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
             <div>
               <h3 style={{ fontSize: '18px', fontWeight: 700, color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '10px' }}>
                 <Music size={20} color="var(--accent-orange)" />
@@ -1026,17 +1046,19 @@ function MainDashboardApp() {
             </div>
 
             <button style={{
-              padding: '8px 16px',
+              padding: '6px 14px',
               borderRadius: '16px',
               background: 'var(--glass-pill)',
               border: '1px solid var(--glass-border)',
               color: 'var(--text-primary)',
-              fontSize: '13px',
+              fontSize: '12px',
               fontWeight: 600,
               display: 'flex',
               alignItems: 'center',
-              gap: '8px',
-              cursor: 'pointer'
+              gap: '6px',
+              cursor: 'pointer',
+              whiteSpace: 'nowrap',
+              flexShrink: 0
             }}>
               Popularity <ChevronDown size={14} />
             </button>
@@ -1058,14 +1080,18 @@ function MainDashboardApp() {
               <span style={{ textAlign: 'right' }}>Like</span>
             </div>
 
-            {playlist.map((song) => {
+            {playlist.map((song, index) => {
               const isCurrent = currentTrack.id === song.id;
               const isLiked = !!likedSongs[song.id];
 
               return (
                 <motion.div
                   key={song.id}
-                  whileHover={{ scale: 1.008 }}
+                  initial={{ opacity: 0, y: 15 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.35, delay: index * 0.05, ease: 'easeOut' }}
+                  whileHover={{ scale: 1.012, y: -2, boxShadow: '0 8px 24px rgba(0,0,0,0.3)' }}
+                  whileTap={{ scale: 0.99 }}
                   onClick={() => { setCurrentTrack(song); setIsPlaying(true); }}
                   className="track-list-row"
                   style={{
@@ -1079,13 +1105,15 @@ function MainDashboardApp() {
                     backdropFilter: 'blur(20px)',
                     WebkitBackdropFilter: 'blur(20px)',
                     cursor: 'pointer',
-                    transition: 'all 0.25s ease',
                     position: 'relative'
                   }}
                 >
                   {/* Track Thumbnail & Details */}
                   <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                    <div style={{ width: '48px', height: '48px', borderRadius: '14px', overflow: 'hidden', position: 'relative', border: '1px solid var(--glass-border)' }}>
+                    <motion.div 
+                      whileHover={{ scale: 1.05 }}
+                      style={{ width: '48px', height: '48px', borderRadius: '14px', overflow: 'hidden', position: 'relative', border: '1px solid var(--glass-border)' }}
+                    >
                       <img src={song.cover} alt={song.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                       <div style={{
                         position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
@@ -1101,7 +1129,7 @@ function MainDashboardApp() {
                           <Play size={16} fill="#fff" color="#fff" />
                         )}
                       </div>
-                    </div>
+                    </motion.div>
                     <div>
                       <div style={{ fontSize: '14px', fontWeight: 700, color: 'var(--text-primary)' }}>{song.title}</div>
                       <div style={{ fontSize: '12px', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: '6px', marginTop: '2px' }}>
@@ -1130,8 +1158,9 @@ function MainDashboardApp() {
                   {/* Interactive Like Button Container */}
                   <div className="like-btn-col" style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
                     <motion.button
-                      whileHover={{ scale: 1.2 }}
-                      whileTap={{ scale: 0.85 }}
+                      whileHover={{ scale: 1.25, rotate: isLiked ? 0 : [0, -10, 10, 0] }}
+                      whileTap={{ scale: 0.8 }}
+                      transition={{ type: 'spring', stiffness: 400, damping: 15 }}
                       onClick={(e) => {
                         e.stopPropagation();
                         setLikedSongs((prev) => ({ ...prev, [song.id]: !prev[song.id] }));
@@ -1145,8 +1174,7 @@ function MainDashboardApp() {
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        cursor: 'pointer',
-                        transition: 'all 0.2s ease'
+                        cursor: 'pointer'
                       }}
                     >
                       <Heart size={16} fill={isLiked ? '#ef4444' : 'none'} color={isLiked ? '#ef4444' : 'var(--text-muted)'} />
@@ -1158,13 +1186,22 @@ function MainDashboardApp() {
           </div>
 
           {/* INTEGRATED FULL MUSIC PLAYER BAR */}
-          <div className="imax-glass-pill music-player-bar" style={{ padding: '16px 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '24px', marginTop: '8px' }}>
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.2 }}
+            className="imax-glass-pill music-player-bar" 
+            style={{ padding: '16px 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '24px', marginTop: '8px' }}
+          >
 
             {/* Currently Playing Track Info */}
             <div className="player-track-info" style={{ display: 'flex', alignItems: 'center', gap: '14px', width: '260px' }}>
-              <div style={{ width: '42px', height: '42px', borderRadius: '10px', overflow: 'hidden' }}>
+              <motion.div 
+                whileHover={{ scale: 1.08, rotate: 2 }}
+                style={{ width: '42px', height: '42px', borderRadius: '10px', overflow: 'hidden' }}
+              >
                 <img src={currentTrack.cover} alt={currentTrack.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-              </div>
+              </motion.div>
               <div style={{ overflow: 'hidden' }}>
                 <div style={{ fontSize: '13px', fontWeight: 700, color: 'var(--text-primary)', whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>
                   {currentTrack.title}
@@ -1175,39 +1212,130 @@ function MainDashboardApp() {
               </div>
             </div>
 
-            {/* Playback Controls & Timeline Scrubber */}
-            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '18px' }}>
+            {/* Playback Controls & Timeline Scrubber (Dominant Feature) */}
+            <div style={{ flex: 2, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px', minWidth: 0, width: '100%' }}>
+              
+              {/* SINGLE INLINE CONTROLS ROW: Volume Icon, Previous, Play/Pause, Next, Like Icon */}
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '20px', width: '100%', position: 'relative' }}>
+                
+                {/* Volume Control: Inline Bar Always in Front of Icon */}
+                <motion.div
+                  whileHover={{ scale: 1.03 }}
+                  className="player-volume-box"
+                  style={{ display: 'flex', alignItems: 'center', gap: '6px' }}
+                >
+                  <motion.button
+                    whileHover={{ scale: 1.2, color: 'var(--accent-orange)' }}
+                    whileTap={{ scale: 0.85 }}
+                    onClick={toggleMute}
+                    title={Number(volume) === 0 ? "Unmute" : "Mute"}
+                    style={{
+                      background: 'transparent',
+                      border: 'none',
+                      color: 'var(--text-secondary)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      cursor: 'pointer',
+                      padding: '4px',
+                      flexShrink: 0,
+                      opacity: Number(volume) === 0 ? 0.55 : 1
+                    }}
+                  >
+                    {Number(volume) === 0 ? (
+                      <VolumeX size={18} color="var(--text-secondary)" />
+                    ) : (
+                      <Volume2 size={18} color="var(--text-primary)" />
+                    )}
+                  </motion.button>
+
+                  {/* Inline Volume Bar (Always in Front of Volume Icon) */}
+                  <motion.input
+                    whileHover={{ scaleY: 1.2 }}
+                    type="range"
+                    min="0"
+                    max="100"
+                    value={volume}
+                    onChange={(e) => setVolume(e.target.value)}
+                    className="player-inline-volume-slider"
+                    title={`Volume: ${volume}%`}
+                    style={{
+                      width: '42px',
+                      height: '4px',
+                      accentColor: 'var(--accent-orange)',
+                      background: `linear-gradient(to right, var(--accent-orange) ${volume}%, rgba(255,255,255,0.15) ${volume}%)`,
+                      borderRadius: '4px',
+                      cursor: 'pointer',
+                      outline: 'none',
+                      flexShrink: 0
+                    }}
+                  />
+                </motion.div>
+
+                {/* Previous Track Button */}
                 <motion.button
-                  whileHover={{ scale: 1.15, color: 'var(--accent-orange)' }}
-                  whileTap={{ scale: 0.9 }}
+                  whileHover={{ scale: 1.2, color: 'var(--accent-orange)' }}
+                  whileTap={{ scale: 0.85 }}
                   onClick={handlePrevTrack}
                   style={{ border: 'none', background: 'transparent', color: 'var(--text-primary)', cursor: 'pointer', display: 'flex', alignItems: 'center' }}
                 >
                   <SkipBack size={20} />
                 </motion.button>
-                <button
+
+                {/* Play / Pause Toggle Button */}
+                <motion.button
+                  whileHover={{ scale: 1.12, boxShadow: '0 6px 20px rgba(255, 107, 53, 0.35)' }}
+                  whileTap={{ scale: 0.9 }}
+                  transition={{ type: 'spring', stiffness: 500, damping: 20 }}
                   onClick={() => setIsPlaying(!isPlaying)}
                   style={{
-                    width: '38px', height: '38px', borderRadius: '50%', border: 'none',
+                    width: '40px', height: '40px', borderRadius: '50%', border: 'none',
                     background: 'var(--text-primary)', color: 'var(--app-bg)', display: 'flex',
-                    alignItems: 'center', justifyContent: 'center', cursor: 'pointer'
+                    alignItems: 'center', justifyContent: 'center', cursor: 'pointer', flexShrink: 0
                   }}
                 >
                   {isPlaying ? <Pause size={18} fill="currentColor" /> : <Play size={18} fill="currentColor" style={{ marginLeft: '2px' }} />}
-                </button>
+                </motion.button>
+
+                {/* Next Track Button */}
                 <motion.button
-                  whileHover={{ scale: 1.15, color: 'var(--accent-orange)' }}
-                  whileTap={{ scale: 0.9 }}
+                  whileHover={{ scale: 1.2, color: 'var(--accent-orange)' }}
+                  whileTap={{ scale: 0.85 }}
                   onClick={handleNextTrack}
                   style={{ border: 'none', background: 'transparent', color: 'var(--text-primary)', cursor: 'pointer', display: 'flex', alignItems: 'center' }}
                 >
                   <SkipForward size={20} />
                 </motion.button>
+
+                {/* Like / Heart Icon Button (Active State Enabled) */}
+                <motion.button
+                  whileHover={{ scale: 1.25, rotate: likedSongs[currentTrack.id] ? 0 : [0, -10, 10, 0] }}
+                  whileTap={{ scale: 0.8 }}
+                  transition={{ type: 'spring', stiffness: 400, damping: 15 }}
+                  onClick={() => setLikedSongs((prev) => ({ ...prev, [currentTrack.id]: !prev[currentTrack.id] }))}
+                  title={likedSongs[currentTrack.id] ? "Liked" : "Like"}
+                  style={{
+                    border: 'none',
+                    background: likedSongs[currentTrack.id] ? 'rgba(255, 107, 53, 0.15)' : 'transparent',
+                    color: likedSongs[currentTrack.id] ? 'var(--accent-orange)' : 'var(--text-secondary)',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: '32px',
+                    height: '32px',
+                    borderRadius: '50%',
+                    boxShadow: likedSongs[currentTrack.id] ? '0 0 12px rgba(255, 107, 53, 0.4)' : 'none',
+                    transition: 'all 0.2s ease'
+                  }}
+                >
+                  <Heart size={18} fill={likedSongs[currentTrack.id] ? 'var(--accent-orange)' : 'none'} color={likedSongs[currentTrack.id] ? 'var(--accent-orange)' : 'var(--text-secondary)'} />
+                </motion.button>
+
               </div>
 
-              {/* Scrubber Bar */}
-              <div style={{ width: '100%', display: 'flex', alignItems: 'center', gap: '12px' }}>
+              {/* Dominant Timeline Scrubber Bar */}
+              <div style={{ width: '100%', display: 'flex', alignItems: 'center', gap: '10px' }}>
                 <span style={{ fontSize: '11px', fontWeight: 600, color: 'var(--text-muted)', minWidth: '34px' }}>
                   {formatTime(currentTimeSec)}
                 </span>
@@ -1220,7 +1348,7 @@ function MainDashboardApp() {
                   onChange={handleProgressChange}
                   style={{
                     flex: 1,
-                    height: '5px',
+                    height: '6px',
                     accentColor: 'var(--accent-orange)',
                     background: `linear-gradient(to right, var(--accent-orange) ${audioProgress}%, rgba(255,255,255,0.1) ${audioProgress}%)`,
                     borderRadius: '4px',
@@ -1234,46 +1362,7 @@ function MainDashboardApp() {
               </div>
             </div>
 
-            {/* Volume Control with Interactive Mute/Unmute Speaker Button */}
-            <div className="player-volume-box" style={{ display: 'flex', alignItems: 'center', gap: '10px', width: '150px' }}>
-              <motion.button
-                whileHover={{ scale: 1.15 }}
-                whileTap={{ scale: 0.85 }}
-                onClick={toggleMute}
-                title={Number(volume) === 0 ? "Unmute" : "Mute"}
-                style={{
-                  background: 'var(--glass-pill)',
-                  border: '1px solid var(--glass-border)',
-                  borderRadius: '50%',
-                  width: '32px',
-                  height: '32px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  cursor: 'pointer',
-                  padding: 0,
-                  transition: 'all 0.2s ease',
-                  flexShrink: 0,
-                  opacity: Number(volume) === 0 ? 0.55 : 1
-                }}
-              >
-                {Number(volume) === 0 ? (
-                  <VolumeX size={16} color="var(--text-secondary)" />
-                ) : (
-                  <Volume2 size={16} color="var(--text-primary)" />
-                )}
-              </motion.button>
-              <input
-                type="range"
-                min="0"
-                max="100"
-                value={volume}
-                onChange={(e) => setVolume(e.target.value)}
-                style={{ width: '100%', accentColor: 'var(--accent-orange)', cursor: 'pointer' }}
-              />
-            </div>
-
-          </div>
+          </motion.div>
 
         </div>
 

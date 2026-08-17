@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Mail, Lock, ArrowRight, Sparkles, UserCheck, ShieldCheck, Zap, Radio } from 'lucide-react';
-import CustomCursor from './CustomCursor';
+import CustomCursor from '../../CustomCursor';
 
 export default function LoginPage({ onGuestLogin }) {
   const navigate = useNavigate();
