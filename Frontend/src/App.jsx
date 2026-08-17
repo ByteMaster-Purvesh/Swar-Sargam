@@ -39,6 +39,8 @@ import {
   Maximize2
 } from 'lucide-react';
 import './index.css';
+import RouteComponent from './features/routes/Route';
+import { AuthProvider } from './features/auth/context/auth.Context';
 
 import img1 from './assets/Herosection/1.jpg';
 import img2 from './assets/Herosection/2.jpg';
@@ -50,6 +52,7 @@ import img7 from './assets/Herosection/7.jpg';
 import img8 from './assets/Herosection/8.jpg';
 import img9 from './assets/Herosection/9.jpg';
 import img10 from './assets/Herosection/10.jpg';
+import { AuthProvider } from './features/auth/context/auth.Context';
 
 const HERO_IMAGES = [img1, img2, img3, img4, img5, img6, img7, img8, img9, img10];
 
@@ -1374,10 +1377,8 @@ function MainDashboardApp() {
 
 export default function App() {
   return (
-    <Routes>
-      <Route path="/login" element={<LoginPage />} />
-      <Route path="/registration" element={<RegistrationPage />} />
-      <Route path="*" element={<MainDashboardApp />} />
-    </Routes>
+    <AuthProvider>
+      <RouteComponent />
+    </AuthProvider>
   );
 }
