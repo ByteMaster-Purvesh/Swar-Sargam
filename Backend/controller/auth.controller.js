@@ -114,7 +114,7 @@ const userLogout = async ( req, res ) => {
 
     res.clearCookie = token
     
-    const blacklistToken = await redisInstance.set(token, Date.now().toString())
+    const blacklistToken = await redisInstance.set(token, Date.now().toString(), "EX", 60 * 60 )
 
     res.status(200).json({
         message: 'Token is blacklisted and User Logout successfuly',
