@@ -1,36 +1,34 @@
-# 🎵 Swar-Sandhan
+# 🎵 Swar-Sandhan (IMAX Music AI)
 
-## AI-Powered Emotion-Aware Music Recommendation Platform
+## AI-Powered Emotion-Aware Music Recommendation & Facial Analysis Platform
 
-**Swar-Sandhan** is an AI-powered music recommendation platform that uses real-time facial analysis to identify a user's emotional state and deliver personalized music recommendations accordingly.
+**Swar-Sandhan** (IMAX Music AI) is an advanced AI-powered web platform that performs real-time facial expression analysis using Google MediaPipe and TensorFlow.js, mapping emotional states directly to dynamic music recommendations, and persisting scan telemetry to MongoDB.
 
-Built with **Google MediaPipe, TensorFlow.js, MERN Stack (MongoDB, Express, React, Node.js), and Redis Cloud**, the platform combines AI-based emotion detection with a modern full-stack architecture to create an interactive and personalized music experience.
+Built with **Google MediaPipe, TensorFlow.js, MERN Stack (MongoDB, Express, React, Node.js), and Redis Cloud**, the platform delivers end-to-end user authentication, mood-aware audio streaming, and database persistence.
 
 ---
 
 ## ✨ Key Features
 
-* 🎭 **Real-Time Emotion Detection** — Analyze facial expressions in real-time using Google MediaPipe Vision tasks & TensorFlow.js.
-* 🎵 **Mood-Based Recommendations** — Recommend songs according to the detected emotional state (Happy, Sad, Surprised).
-* 🔐 **JWT Authentication** — Secure user authentication and cookie-based session authorization.
-* ⚡ **Redis Token Blacklisting** — Instant logout security with `ioredis` JWT session invalidation.
-* 👨‍💼 **Admin Dashboard & Management** — Interface for content management and song recommendation controls.
-* 🎨 **Interactive UI / UX** — Modern aesthetic featuring Framer Motion micro-animations, Lucide React icons, and fluid scan visualizers.
-* 📱 **Responsive Layout** — Fully responsive interface optimized across mobile, tablet, and desktop devices.
+* 🎭 **Real-Time Emotion Scanning** — Analyze facial mesh landmarks (40+ blendshape score vectors) in real-time using Google MediaPipe Vision tasks & TensorFlow.js.
+* 💾 **MongoDB Facial Telemetry Persistence** — Automatically save facial scan records, confidence scores, and emotion classifications to the MongoDB database via backend REST APIs.
+* 🎵 **Mood-Curated Playlists** — Dynamically serve customized music playlists based on emotional states (Happy, Sad, Nature, Energetic).
+* 🔐 **JWT & HTTP-Only Cookie Authentication** — Secure authorization workflow with encrypted password hashing and HTTP-only cookie management.
+* ⚡ **Redis Token Blacklisting** — Instant session invalidation on logout powered by `ioredis` and Redis Cloud.
+* 👤 **Dynamic Profile & Session Header** — Interactive header with logged-in user profile dropdown, account info, and quick logout.
+* 📱 **Adaptive Desktop & Mobile UI** — 2-column horizontal showcase card on desktop and single-column vertical card layout on mobile viewports (<768px).
+* 🎨 **IMAX Glassmorphism Aesthetic** — High-end dark theme featuring Framer Motion micro-animations, Lucide React icons, dark autofill inputs, and SVG audio visualizers.
 
 ---
 
 ## 🧠 Supported Emotions
 
-Swar-Sargam currently recognizes three primary emotional states:
-
-| Emotion      | Recommendation             |
-| ------------ | -------------------------- |
-| 😊 Happy     | Energetic and upbeat music |
-| 😢 Sad       | Calm and soothing music    |
-| 😲 Surprised | Dynamic and engaging music |
-
-The detected emotion is used to dynamically generate relevant music recommendations.
+| Emotion      | Description / Music Recommendation          |
+| ------------ | ------------------------------------------- |
+| 😊 Happy     | Sunburst euphoria & upbeat electronic beats |
+| 😢 Sad       | Soft piano rain & soothing acoustic melodies|
+| 🌿 Nature    | Forest canopy & organic ambient soundscapes |
+| ⚡ Energetic | High-BPM HIIT session & synthwave surge     |
 
 ---
 
@@ -51,7 +49,7 @@ The detected emotion is used to dynamically generate relevant music recommendati
                   ▼                         ▼
         ┌──────────────────┐      ┌──────────────────┐
         │ Google MediaPipe │      │   Music Player   │
-        │ Emotion Analysis │      │ & Recommendations│
+        │ Emotion Analysis │      │ & Curation Engine│
         └────────┬─────────┘      └────────┬─────────┘
                  │                         │
                  └────────────┬────────────┘
@@ -76,23 +74,24 @@ The detected emotion is used to dynamically generate relevant music recommendati
 ### Frontend
 * **React 19** & **Vite 8**
 * **React Router DOM 7**
-* **Framer Motion 13** — Smooth page transitions & micro-interactions
-* **Lucide React** — Icon collection
-* **React Webcam** — Real-time camera feed capture
+* **Framer Motion 13** — Micro-interactions & animations
+* **Lucide React** — Icon library
+* **React Webcam** — Web camera stream capture
+* **Axios** — API communication with CORS credentials support
 
 ### Backend
 * **Node.js** & **Express 5**
 * **JSON Web Tokens (JWT)** & **Cookie-Parser**
+* **CORS Middleware** — Configured for credentialed cross-origin requests (`withCredentials: true`)
 * **Bcryptjs** — Password hashing
 * **Mongoose 9** — MongoDB ODM
 
 ### Database & Caching
-* **MongoDB Atlas** — Application data persistence
-* **Redis Cloud (ioredis)** — High-performance token blacklisting & cache
+* **MongoDB Atlas** — User accounts and facial scan expression history
+* **Redis Cloud (ioredis)** — High-performance JWT token blacklisting
 
 ### AI / Computer Vision
-* **Google MediaPipe Vision** (`@mediapipe/tasks-vision`, `@mediapipe/face_mesh`)
-* **TensorFlow.js** (`@tensorflow/tfjs-core`, `@tensorflow/tfjs-backend-webgl`)
+* **Google MediaPipe Vision** (`@mediapipe/tasks-vision`) — Face landmarker & blendshapes model
 
 ---
 
@@ -103,18 +102,29 @@ Swar-Sandhan/
 │
 ├── Frontend/
 │   ├── src/
-│   │   ├── assets/              # Images, hero banners & static media
+│   │   ├── assets/              # Banners & hero assets
 │   │   ├── features/            # Authentication & Emotion scanner components
-│   │   │   ├── CustomCursor.jsx
-│   │   │   ├── FaceScannerModal.jsx
-│   │   │   ├── LoginPage.jsx
-│   │   │   ├── RegistrationPage.jsx
-│   │   │   └── expression/
-│   │   │       └── components/
-│   │   │           └── FaceExpression.jsx
-│   │   ├── App.jsx              # Main Layout & Application routing
+│   │   │   ├── auth/
+│   │   │   │   ├── context/
+│   │   │   │   │   └── auth.Context.jsx    # AuthProvider & checkAuth state
+│   │   │   │   ├── hook/
+│   │   │   │   │   └── useAuthHook.js      # Auth custom hook
+│   │   │   │   ├── pages/
+│   │   │   │   │   ├── LoginPage.jsx       # Adaptive responsive Login page
+│   │   │   │   │   └── RegistrationPage.jsx# Adaptive responsive Register page
+│   │   │   │   ├── Protected/
+│   │   │   │   │   └── AuthProtected.jsx   # Route guard & loading screen
+│   │   │   │   └── service/
+│   │   │   │       └── authAPI.service.js  # Axios REST API services
+│   │   │   ├── expression/
+│   │   │   │   └── pages/
+│   │   │   │       └── FaceScannerModal.jsx # MediaPipe AI camera scanner modal
+│   │   │   ├── routes/
+│   │   │   │   └── Route.jsx               # Application routes definition
+│   │   │   └── CustomCursor.jsx
+│   │   ├── App.jsx              # Main Dashboard, audio visualizer & player
 │   │   ├── App.css
-│   │   ├── index.css            # Tailored styling system
+│   │   ├── index.css            # Global dark glassmorphic styling system
 │   │   └── main.jsx
 │   ├── index.html
 │   ├── vite.config.js
@@ -124,19 +134,20 @@ Swar-Sandhan/
 │   ├── config/                  # Database & Redis configurations
 │   │   ├── cache.Config.js
 │   │   └── dataBase.Config.js
-│   ├── controller/              # Auth & Business logic controllers
+│   ├── controller/              # Auth & Expression business logic controllers
 │   │   └── auth.controller.js
 │   ├── middleware/              # JWT & Blacklist protection middleware
 │   │   └── auth.middleware.js
-│   ├── module/                  # Mongoose models / schemas
+│   ├── module/                  # Mongoose models
 │   │   ├── audio.module.js
 │   │   ├── blackListing.module.js
+│   │   ├── expression.module.js  # Expression scan schema
 │   │   └── user.module.js
-│   ├── routes/                  # API endpoints definition
+│   ├── routes/                  # REST API endpoints definition
 │   │   └── auth.routes.js
 │   ├── src/
-│   │   └── app.js               # Express application initialization
-│   ├── server.js                # Server entry point
+│   │   └── app.js               # Express application initialization & CORS config
+│   ├── server.js                # Entry point
 │   └── package.json
 │
 └── README.md
@@ -146,17 +157,16 @@ Swar-Sandhan/
 
 ## 🔐 API Endpoints & Security
 
-### Authentication Endpoints (`/api/auth`)
+### Authentication & Expression Endpoints (`/api/auth`)
 
 | Method | Endpoint | Description | Auth Required |
 | ------ | -------- | ----------- | ------------- |
-| `POST` | `/api/auth/register` | Register a new user & issue JWT | No |
+| `POST` | `/api/auth/register` | Register a new user & set JWT cookie | No |
 | `POST` | `/api/auth/login` | Authenticate user & set JWT cookie | No |
-| `GET` | `/api/auth/get-me` | Fetch authenticated user profile | Yes (`Cookie`) |
+| `GET` | `/api/auth/get-me` | Fetch current authenticated user details | Yes (`Cookie`) |
 | `POST` | `/api/auth/logout` | Logout user & blacklist JWT token in Redis | Yes (`Cookie`) |
-
-### Token Blacklisting Mechanism
-Swar-Sargam uses **Redis Cloud** to manage token invalidation. On logout, the token is stored in Redis. Subsequent requests with a blacklisted token are intercepted and rejected by `auth.middleware.js` before reaching any protected controller.
+| `POST` | `/api/auth/expression` | Save facial scan emotion telemetry to MongoDB | Yes (`Cookie`) |
+| `GET` | `/api/auth/expressions` | Retrieve user facial expression scan history | Yes (`Cookie`) |
 
 ---
 
@@ -181,7 +191,7 @@ Create a `.env` file inside the `Backend` directory:
 ```env
 PORT=8080
 DATABASE_URI=your_mongodb_atlas_connection_string
-DATABASE_NAME=your_database_name
+DATABASE_NAME=Day-25
 JWT_SECRET_TOKEN=your_jwt_secret_key
 
 REDIS_HOST=your_redis_host
@@ -205,7 +215,7 @@ npm install
 npm run dev
 ```
 
-The application frontend will run at:
+Open your browser at:
 
 ```text
 http://localhost:5173
@@ -215,13 +225,11 @@ http://localhost:5173
 
 ## 📈 Engineering Highlights
 
-Swar-Sargam demonstrates:
-
-* 🤖 Integration of **AI / Computer Vision** into web applications for real-time expression detection.
-* 🎭 Dynamic emotion-to-audio recommendation mapping.
-* ⚛️ Modern React architecture featuring context, custom hooks, and Framer Motion visualizer states.
-* 🔧 Clean separation of concerns in Express backend (Config, Controller, Middleware, Models, Routes).
-* 🔐 Secure authentication using **JWT** and **Redis Cloud token blacklisting**.
+* 🤖 **On-Device Computer Vision**: Real-time 40+ facial mesh landmark classification powered by Google MediaPipe.
+* 💾 **MongoDB Telemetry Persistence**: Face scan results dynamically stored in MongoDB with timestamp and confidence metrics.
+* ⚛️ **Modern React Architecture**: Context API, custom auth hooks, route guards, and Framer Motion UI transitions.
+* 🛡️ **Cross-Origin Security & Token Control**: CORS configured with `credentials: true` and Redis-backed session token revocation.
+* 📱 **Adaptive UI**: Responsive layouts tailored for desktop (horizontal landscape 2-column) and mobile viewports (vertical single-column card).
 
 ---
 

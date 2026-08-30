@@ -10,23 +10,39 @@ const AuthProtected = ({ children }) => {
         return (
             <div style={{
                 minHeight: '100vh',
+                width: '100%',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                background: 'var(--bg-solid, #0b0c10)',
+                background: 'radial-gradient(circle at 20% 20%, #1e1b24 0%, #13141a 50%, #0b0c10 100%)',
                 color: '#ffffff',
+                position: 'relative',
+                overflow: 'hidden',
                 fontFamily: 'system-ui, -apple-system, sans-serif'
             }}>
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px' }}>
+                {/* Ambient Background Glow Orbs */}
+                <div style={{
+                    position: 'absolute', top: '15%', left: '15%', width: '450px', height: '450px',
+                    background: 'radial-gradient(circle, rgba(255, 107, 53, 0.18) 0%, transparent 70%)',
+                    filter: 'blur(60px)', pointerEvents: 'none'
+                }} />
+                <div style={{
+                    position: 'absolute', bottom: '15%', right: '15%', width: '450px', height: '450px',
+                    background: 'radial-gradient(circle, rgba(60, 212, 160, 0.15) 0%, transparent 70%)',
+                    filter: 'blur(70px)', pointerEvents: 'none'
+                }} />
+
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '20px', zIndex: 1 }}>
                     <div style={{
-                        width: '32px',
-                        height: '32px',
-                        border: '3px solid rgba(255, 107, 53, 0.2)',
+                        width: '40px',
+                        height: '40px',
+                        border: '3px solid rgba(255, 107, 53, 0.15)',
                         borderTop: '3px solid #ff6b35',
+                        borderRight: '3px solid #ff6b35',
                         borderRadius: '50%',
-                        animation: 'spin 0.8s linear infinite'
+                        animation: 'spin 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite'
                     }} />
-                    <span style={{ fontSize: '14px', color: '#a0a5b5', fontWeight: 500 }}>
+                    <span style={{ fontSize: '15px', color: '#c0c5d5', fontWeight: 600, letterSpacing: '0.5px' }}>
                         Loading IMAX Music AI...
                     </span>
                     <style>{`
@@ -48,3 +64,5 @@ const AuthProtected = ({ children }) => {
 };
 
 export default AuthProtected;
+
+ 

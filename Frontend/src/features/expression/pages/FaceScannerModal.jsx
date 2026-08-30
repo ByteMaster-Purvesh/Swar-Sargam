@@ -143,24 +143,19 @@ export default function FaceScannerModal({ isScanning, onCapture, onClose }) {
         exit={{ opacity: 0, scale: 0.95 }}
         transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
         style={{
-          position: 'absolute',
-          top: 0, left: 0, right: 0, bottom: 0,
-          background: 'var(--modal-solid-bg)',
-          borderRadius: '28px',
-          border: '1px solid var(--glass-border)',
-          boxShadow: '0 24px 60px rgba(0, 0, 0, 0.45)',
-          zIndex: 30,
+          width: '100%',
+          height: '100%',
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
-          justifyContent: 'space-between',
-          padding: '20px 28px',
-          overflow: 'hidden'
+          justifyContent: 'center',
+          padding: '32px 40px',
+          zIndex: 10
         }}
       >
         {/* Top Header Bar */}
-        <div style={{ width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <div style={{ fontSize: '15px', fontWeight: 800, color: 'var(--text-primary)' }}>
+        <div style={{ width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
+          <div style={{ fontSize: '20px', fontWeight: 800, color: 'var(--text-primary)' }}>
             MediaPipe Face Landmarker & Blendshapes AI
           </div>
 
@@ -186,165 +181,177 @@ export default function FaceScannerModal({ isScanning, onCapture, onClose }) {
           </motion.button>
         </div>
 
-        {/* PROPORTIONED IMAX CAMERA VIEWFINDER FRAME (240px x 240px) */}
-        <div style={{
-          width: '240px',
-          height: '240px',
-          borderRadius: '24px',
-          border: '2px solid var(--accent-orange)',
-          boxShadow: '0 0 30px rgba(255, 107, 53, 0.25), inset 0 0 20px rgba(60, 212, 160, 0.15)',
-          position: 'relative',
-          overflow: 'hidden',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          background: '#000',
-          margin: '4px 0'
-        }}>
-          {/* Futuristic 4-Corner Target Reticle Brackets */}
-          <div style={{ position: 'absolute', top: '10px', left: '10px', width: '18px', height: '18px', borderTop: '3px solid var(--accent-orange)', borderLeft: '3px solid var(--accent-orange)', borderRadius: '4px 0 0 0', zIndex: 4 }} />
-          <div style={{ position: 'absolute', top: '10px', right: '10px', width: '18px', height: '18px', borderTop: '3px solid var(--accent-orange)', borderRight: '3px solid var(--accent-orange)', borderRadius: '0 4px 0 0', zIndex: 4 }} />
-          <div style={{ position: 'absolute', bottom: '10px', left: '10px', width: '18px', height: '18px', borderBottom: '3px solid var(--accent-orange)', borderLeft: '3px solid var(--accent-orange)', borderRadius: '0 0 0 4px', zIndex: 4 }} />
-          <div style={{ position: 'absolute', bottom: '10px', right: '10px', width: '18px', height: '18px', borderBottom: '3px solid var(--accent-orange)', borderRight: '3px solid var(--accent-orange)', borderRadius: '0 0 4px 0', zIndex: 4 }} />
-
-          {useLiveCamera ? (
-            <Webcam
-              audio={false}
-              ref={webcamRef}
-              screenshotFormat="image/jpeg"
-              width={240}
-              height={240}
-              videoConstraints={{ width: 480, height: 480, facingMode: "user" }}
-              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-              onUserMediaError={() => setUseLiveCamera(false)}
-            />
-          ) : (
-            <img 
-              src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=800&q=80" 
-              alt="Facial Scan Viewfinder" 
-              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-            />
-          )}
-
-          {/* MediaPipe Blendshape Face Mesh Overlay */}
-          <svg 
-            style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', pointerEvents: 'none', zIndex: 3 }}
-            viewBox="0 0 100 100"
-          >
-            <circle cx="35" cy="40" r="2" fill="var(--accent-cyan)" style={{ filter: 'drop-shadow(0 0 6px var(--accent-cyan))' }} />
-            <circle cx="65" cy="40" r="2" fill="var(--accent-cyan)" style={{ filter: 'drop-shadow(0 0 6px var(--accent-cyan))' }} />
-            <path d="M 28 35 Q 35 30 42 35" stroke="var(--accent-cyan)" strokeWidth="1.2" fill="none" />
-            <path d="M 58 35 Q 65 30 72 35" stroke="var(--accent-cyan)" strokeWidth="1.2" fill="none" />
-            <line x1="50" y1="38" x2="50" y2="54" stroke="var(--accent-orange)" strokeWidth="1.2" />
-            <path d="M 36 68 Q 50 78 64 68" stroke="var(--accent-amber)" strokeWidth="1.5" fill="none" />
-            <ellipse cx="50" cy="50" rx="34" ry="42" stroke="rgba(255,107,53,0.4)" strokeWidth="1" strokeDasharray="3 3" fill="none" />
-          </svg>
-
-          {/* Animated Laser Scan Line */}
-          <div className="scan-line" style={{ zIndex: 3 }} />
-
-          {/* Live Detected Blendshape Badge Overlay */}
+        {/* Content Wrapper for Two-Column Layout */}
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: '60px', width: '100%' }}>
+          {/* LEFT COLUMN: Camera Frame */}
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+          {/* PROPORTIONED IMAX CAMERA VIEWFINDER FRAME (340px x 340px) */}
           <div style={{
-            position: 'absolute',
-            bottom: '10px',
-            background: 'rgba(15, 23, 42, 0.85)',
-            padding: '4px 12px',
-            borderRadius: '14px',
-            fontSize: '11px',
-            fontWeight: 800,
-            color: 'var(--accent-cyan)',
-            border: '1px solid rgba(60, 212, 160, 0.5)',
-            backdropFilter: 'blur(8px)',
-            zIndex: 4,
+            width: '340px',
+            height: '340px',
+            borderRadius: '24px',
+            border: '2px solid var(--accent-orange)',
+            boxShadow: '0 0 30px rgba(255, 107, 53, 0.25), inset 0 0 20px rgba(60, 212, 160, 0.15)',
+            position: 'relative',
+            overflow: 'hidden',
             display: 'flex',
             alignItems: 'center',
-            gap: '6px'
+            justifyContent: 'center',
+            background: '#000'
           }}>
-            <Scan size={13} color="var(--accent-cyan)" />
-            AI Mood: {detectedLiveExpression}
+            {/* Futuristic 4-Corner Target Reticle Brackets */}
+            <div style={{ position: 'absolute', top: '10px', left: '10px', width: '18px', height: '18px', borderTop: '3px solid var(--accent-orange)', borderLeft: '3px solid var(--accent-orange)', borderRadius: '4px 0 0 0', zIndex: 4 }} />
+            <div style={{ position: 'absolute', top: '10px', right: '10px', width: '18px', height: '18px', borderTop: '3px solid var(--accent-orange)', borderRight: '3px solid var(--accent-orange)', borderRadius: '0 4px 0 0', zIndex: 4 }} />
+            <div style={{ position: 'absolute', bottom: '10px', left: '10px', width: '18px', height: '18px', borderBottom: '3px solid var(--accent-orange)', borderLeft: '3px solid var(--accent-orange)', borderRadius: '0 0 0 4px', zIndex: 4 }} />
+            <div style={{ position: 'absolute', bottom: '10px', right: '10px', width: '18px', height: '18px', borderBottom: '3px solid var(--accent-orange)', borderRight: '3px solid var(--accent-orange)', borderRadius: '0 0 4px 0', zIndex: 4 }} />
+
+            {useLiveCamera ? (
+              <Webcam
+                audio={false}
+                ref={webcamRef}
+                screenshotFormat="image/jpeg"
+                width={340}
+                height={340}
+                videoConstraints={{ width: 480, height: 480, facingMode: "user" }}
+                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                onUserMediaError={() => setUseLiveCamera(false)}
+              />
+            ) : (
+              <img 
+                src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=800&q=80" 
+                alt="Facial Scan Viewfinder" 
+                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+              />
+            )}
+
+
+
+            {/* Live Detected Blendshape Badge Overlay */}
+            <div style={{
+              position: 'absolute',
+              bottom: '10px',
+              background: 'rgba(15, 23, 42, 0.85)',
+              padding: '4px 12px',
+              borderRadius: '14px',
+              fontSize: '11px',
+              fontWeight: 800,
+              color: 'var(--accent-cyan)',
+              border: '1px solid rgba(60, 212, 160, 0.5)',
+              backdropFilter: 'blur(8px)',
+              zIndex: 4,
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px'
+            }}>
+              <Scan size={13} color="var(--accent-cyan)" />
+              AI Mood: {detectedLiveExpression}
+            </div>
+            </div>
           </div>
-        </div>
 
-        {/* Real-time Blendshape Scores Readout Bar */}
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '16px',
-          padding: '5px 16px',
-          borderRadius: '16px',
-          background: 'var(--glass-pill)',
-          border: '1px solid var(--glass-border)',
-          fontSize: '11px',
-          color: 'var(--text-secondary)',
-          fontWeight: 700
-        }}>
-          <span>Smile: <strong style={{ color: 'var(--accent-cyan)' }}>{blendshapeScores.smile}</strong></span>
-          <span>Jaw: <strong style={{ color: 'var(--accent-amber)' }}>{blendshapeScores.jawOpen}</strong></span>
-          <span>Brow: <strong style={{ color: 'var(--accent-orange)' }}>{blendshapeScores.browUp}</strong></span>
-        </div>
+          {/* RIGHT COLUMN: Attributes, Mood Categories & Capture Button */}
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '24px' }}>
+            
+            {/* Dynamic Mood Emoji Display */}
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={selectedEmotion}
+                initial={{ scale: 0.5, opacity: 0, y: 20 }}
+                animate={{ scale: 1, opacity: 1, y: 0 }}
+                exit={{ scale: 0.5, opacity: 0, y: -20 }}
+                transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+                style={{
+                  fontSize: '84px',
+                  lineHeight: '1',
+                  filter: 'drop-shadow(0 15px 25px rgba(0,0,0,0.4))'
+                }}
+              >
+                {AVAILABLE_EMOTIONS.find(e => e.label === selectedEmotion)?.emoji || '😊'}
+              </motion.div>
+            </AnimatePresence>
 
-        {/* Expression Selection Title & Pills */}
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px', width: '100%' }}>
-          <span style={{ fontSize: '11px', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '1px' }}>
-            Classified Expression Title
-          </span>
-          <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
-            {AVAILABLE_EMOTIONS.map((item) => {
-              const isSelected = selectedEmotion === item.label;
-              return (
-                <motion.button
-                  key={item.label}
-                  whileHover={{ scale: 1.06 }}
-                  whileTap={{ scale: 0.94 }}
-                  onClick={() => setSelectedEmotion(item.label)}
-                  style={{
-                    padding: '6px 14px',
-                    borderRadius: '16px',
-                    border: isSelected ? `1.5px solid ${item.color}` : '1px solid var(--glass-border)',
-                    background: isSelected ? `${item.color}25` : 'var(--glass-pill)',
-                    color: isSelected ? item.color : 'var(--text-secondary)',
-                    fontSize: '12px',
-                    fontWeight: 800,
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '5px',
-                    boxShadow: isSelected ? `0 0 12px ${item.color}30` : 'none',
-                    transition: 'all 0.2s ease'
-                  }}
-                >
-                  <span style={{ fontSize: '14px' }}>{item.emoji}</span>
-                  {item.label}
-                </motion.button>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Manual Capture & Sync Button */}
-        <motion.button
-          whileHover={{ scale: 1.04 }}
-          whileTap={{ scale: 0.96 }}
-          onClick={handleManualCapture}
-          style={{
-            padding: '11px 32px',
-            borderRadius: '99px',
-            background: 'linear-gradient(135deg, var(--accent-orange) 0%, #f97316 100%)',
-            color: '#ffffff',
-            fontSize: '13px',
-            fontWeight: 800,
-            border: 'none',
-            cursor: 'pointer',
+            {/* Real-time Blendshape Scores Readout Bar */}
+          <div style={{
             display: 'flex',
             alignItems: 'center',
-            gap: '8px',
-            letterSpacing: '0.3px',
-            boxShadow: '0 6px 20px rgba(255, 107, 53, 0.35)',
-            marginBottom: '4px'
-          }}
-        >
-          <Camera size={16} /> Capture Expression & Sync Mood
-        </motion.button>
+            gap: '16px',
+            padding: '6px 18px',
+            borderRadius: '16px',
+            background: 'var(--glass-pill)',
+            border: '1px solid var(--glass-border)',
+            fontSize: '11px',
+            color: 'var(--text-secondary)',
+            fontWeight: 700
+          }}>
+            <span>Smile: <strong style={{ color: 'var(--accent-cyan)' }}>{blendshapeScores.smile}</strong></span>
+            <span>Jaw: <strong style={{ color: 'var(--accent-amber)' }}>{blendshapeScores.jawOpen}</strong></span>
+            <span>Brow: <strong style={{ color: 'var(--accent-orange)' }}>{blendshapeScores.browUp}</strong></span>
+          </div>
+
+            {/* Expression Selection Title & Pills */}
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px', width: '100%' }}>
+              <span style={{ fontSize: '11px', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '1px' }}>
+                Classified Expression Title
+              </span>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
+              {AVAILABLE_EMOTIONS.map((item) => {
+                const isSelected = selectedEmotion === item.label;
+                return (
+                  <motion.button
+                    key={item.label}
+                    whileHover={{ scale: 1.06 }}
+                    whileTap={{ scale: 0.94 }}
+                    onClick={() => setSelectedEmotion(item.label)}
+                    style={{
+                      padding: '6px 14px',
+                      borderRadius: '16px',
+                      border: isSelected ? `1.5px solid ${item.color}` : '1px solid var(--glass-border)',
+                      background: isSelected ? `${item.color}25` : 'var(--glass-pill)',
+                      color: isSelected ? item.color : 'var(--text-secondary)',
+                      fontSize: '12px',
+                      fontWeight: 800,
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '5px',
+                      boxShadow: isSelected ? `0 0 12px ${item.color}30` : 'none',
+                      transition: 'all 0.2s ease'
+                    }}
+                  >
+                    <span style={{ fontSize: '14px' }}>{item.emoji}</span>
+                    {item.label}
+                  </motion.button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Manual Capture & Sync Button */}
+          <motion.button
+            whileHover={{ scale: 1.04 }}
+            whileTap={{ scale: 0.96 }}
+            onClick={handleManualCapture}
+            style={{
+              padding: '12px 36px',
+              borderRadius: '99px',
+              background: 'linear-gradient(135deg, var(--accent-orange) 0%, #f97316 100%)',
+              color: '#ffffff',
+              fontSize: '13px',
+              fontWeight: 800,
+              border: 'none',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              letterSpacing: '0.3px',
+              boxShadow: '0 6px 20px rgba(255, 107, 53, 0.35)',
+              marginTop: '4px'
+            }}
+          >
+              <Camera size={16} /> Capture Expression & Sync Mood
+            </motion.button>
+          </div>
+        </div>
       </motion.div>
     </AnimatePresence>
   );

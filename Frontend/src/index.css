@@ -4,6 +4,7 @@
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+  transition: background-color 0.4s ease, background 0.4s ease, color 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease;
 }
 
 /* Modern Custom Cursor setup for desktop pointers */
@@ -32,6 +33,9 @@
   --card-shadow: none;
   --glow-orange: 0 0 15px rgba(255, 107, 53, 0.25);
   --glow-green: 0 0 15px rgba(60, 212, 160, 0.2);
+  --hero-btn-bg: var(--text-primary);
+  --hero-btn-color: var(--app-bg);
+  --hero-btn-shadow: none;
 }
 
 [data-theme='light'] {
@@ -53,6 +57,9 @@
   --card-shadow: none;
   --glow-orange: 0 0 15px rgba(249, 115, 22, 0.2);
   --glow-green: 0 0 15px rgba(16, 185, 129, 0.2);
+  --hero-btn-bg: var(--accent-orange);
+  --hero-btn-color: #ffffff;
+  --hero-btn-shadow: 0 4px 12px rgba(255, 107, 53, 0.3);
 }
 
 html, body {

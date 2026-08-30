@@ -1,12 +1,15 @@
 import React, { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { motion } from 'framer-motion';
 
-export default function CustomCursor() {
+export default function CustomCursor({ theme }) {
   const [mousePosition, setMousePosition] = useState({ x: -100, y: -100 });
   const [isClicked, setIsClicked] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
+    setIsMounted(true);
     // Disable on touch devices
     if (window.matchMedia('(pointer: coarse)').matches) return;
 
@@ -35,9 +38,9 @@ export default function CustomCursor() {
     };
   }, [isVisible]);
 
-  if (!isVisible) return null;
+  if (!isVisible || !isMounted) return null;
 
-  return (
+  const cursorContent = (
     <>
       {/* Framer Motion Precision White Core Dot */}
       <motion.div
@@ -48,10 +51,10 @@ export default function CustomCursor() {
           width: '6px',
           height: '6px',
           borderRadius: '50%',
-          backgroundColor: '#ffffff',
-          boxShadow: '0 0 10px rgba(255, 255, 255, 0.9)',
+          backgroundColor: theme === 'light' ? '#0f172a' : '#ffffff',
+          boxShadow: theme === 'light' ? '0 0 10px rgba(15, 23, 42, 0.9)' : '0 0 10px rgba(255, 255, 255, 0.9)',
           pointerEvents: 'none',
-          zIndex: 99999
+          zIndex: 999999
         }}
         animate={{
           x: mousePosition.x - 3,
@@ -66,7 +69,7 @@ export default function CustomCursor() {
         }}
       />
 
-      {/* Framer Motion Smooth Trailing White Glass Ring */}
+      {/* Framer Motion Smooth Trailing Glass Ring */}
       <motion.div
         style={{
           position: 'fixed',
@@ -75,12 +78,12 @@ export default function CustomCursor() {
           width: '24px',
           height: '24px',
           borderRadius: '50%',
-          border: '1.5px solid rgba(255, 255, 255, 0.65)',
-          boxShadow: '0 0 14px rgba(255, 255, 255, 0.25)',
-          backgroundColor: 'rgba(255, 255, 255, 0.03)',
+          border: theme === 'light' ? '1.5px solid rgba(15, 23, 42, 0.65)' : '1.5px solid rgba(255, 255, 255, 0.65)',
+          boxShadow: theme === 'light' ? '0 0 14px rgba(15, 23, 42, 0.25)' : '0 0 14px rgba(255, 255, 255, 0.25)',
+          backgroundColor: theme === 'light' ? 'rgba(15, 23, 42, 0.03)' : 'rgba(255, 255, 255, 0.03)',
           backdropFilter: 'blur(1px)',
           pointerEvents: 'none',
-          zIndex: 99998
+          zIndex: 999998
         }}
         animate={{
           x: mousePosition.x - 12,
@@ -96,4 +99,6 @@ export default function CustomCursor() {
       />
     </>
   );
+
+  return createPortal(cursorContent, document.body);
 }

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Routes, Route, Link, useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
+import Lenis from 'lenis';
 import FaceScannerModal from './features/expression/pages/FaceScannerModal';
 import LoginPage from './features/auth/pages/LoginPage';
 import RegistrationPage from './features/auth/pages/RegistrationPage';
@@ -716,55 +717,83 @@ export function MainDashboardApp() {
               />
             </AnimatePresence>
 
-            {/* Top Text Info */}
-            <div style={{ zIndex: 2, maxWidth: '440px' }}>
-              <span style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '8px',
-                padding: '6px 14px',
-                borderRadius: '30px',
-                background: 'rgba(255, 107, 53, 0.12)',
-                border: '1px solid rgba(255, 107, 53, 0.3)',
-                fontSize: '13px',
-                fontWeight: 700,
-                textTransform: 'uppercase',
-                letterSpacing: '1.5px',
-                color: 'var(--accent-orange)'
-              }}>
-                <Sparkles size={14} color="var(--accent-orange)" />
-                Popular Solution
-              </span>
-              <h2 style={{
-                fontSize: '48px',
-                fontWeight: 800,
-                lineHeight: 1.08,
-                letterSpacing: '1.5px',
-                margin: '16px 0 24px 0',
-                color: 'var(--text-primary)'
-              }}>
-                Optimize <br />
-                <span style={{
-                  background: 'linear-gradient(135deg, var(--text-primary) 30%, var(--accent-orange) 100%)',
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent',
-                  letterSpacing: '1.5px'
-                }}>
-                  Your Metrics
-                </span>
-              </h2>
+            <AnimatePresence mode="wait">
+              {!isScanning ? (
+                <motion.div
+                  key="hero-text"
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -20 }}
+                  transition={{ duration: 0.4 }}
+                  style={{ zIndex: 2, maxWidth: '440px', flexShrink: 0 }}
+                >
+                  <span style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    padding: '6px 14px',
+                    borderRadius: '30px',
+                    background: 'rgba(255, 107, 53, 0.12)',
+                    border: '1px solid rgba(255, 107, 53, 0.3)',
+                    fontSize: '13px',
+                    fontWeight: 700,
+                    textTransform: 'uppercase',
+                    letterSpacing: '1.5px',
+                    color: 'var(--accent-orange)'
+                  }}>
+                    <Sparkles size={14} color="var(--accent-orange)" />
+                    Popular Solution
+                  </span>
+                  <h2 style={{
+                    fontSize: '48px',
+                    fontWeight: 800,
+                    lineHeight: 1.08,
+                    letterSpacing: '1.5px',
+                    margin: '16px 0 24px 0',
+                    color: 'var(--text-primary)'
+                  }}>
+                    Optimize <br />
+                    <span style={{
+                      background: 'linear-gradient(135deg, var(--text-primary) 30%, var(--accent-orange) 100%)',
+                      WebkitBackgroundClip: 'text',
+                      WebkitTextFillColor: 'transparent',
+                      letterSpacing: '1.5px'
+                    }}>
+                      Your Metrics
+                    </span>
+                  </h2>
 
-              <div style={{ marginBottom: '24px' }}>
-                <FluidScanButton onClick={triggerExpressionScan} />
-              </div>
-            </div>
-
-            {/* Live MediaPipe Camera & Face Scanner Modal */}
-            <FaceScannerModal
-              isScanning={isScanning}
-              onCapture={handleFaceCaptured}
-              onClose={() => setIsScanning(false)}
-            />
+                  <div style={{ marginBottom: '24px' }}>
+                    <FluidScanButton onClick={triggerExpressionScan} />
+                  </div>
+                </motion.div>
+              ) : (
+                <motion.div
+                  key="hero-scanner"
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
+                  transition={{ duration: 0.4 }}
+                  style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    zIndex: 10,
+                    width: '100%',
+                    height: '100%',
+                    background: 'var(--modal-solid-bg)'
+                  }}
+                >
+                  <FaceScannerModal
+                    isScanning={isScanning}
+                    onCapture={handleFaceCaptured}
+                    onClose={() => setIsScanning(false)}
+                  />
+                </motion.div>
+              )}
+            </AnimatePresence>
 
             {/* OVERLAID STATS GLASS PILL BAR (Exactly matching reference pill format) */}
             <div
@@ -810,13 +839,14 @@ export function MainDashboardApp() {
                 width: '40px',
                 height: '40px',
                 borderRadius: '50%',
-                background: 'var(--text-primary)',
+                background: 'var(--hero-btn-bg)',
                 border: 'none',
-                color: 'var(--app-bg)',
+                color: 'var(--hero-btn-color)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                cursor: 'pointer'
+                cursor: 'pointer',
+                boxShadow: 'var(--hero-btn-shadow)'
               }}>
                 <ChevronRight size={18} />
               </button>
@@ -1335,7 +1365,7 @@ export function MainDashboardApp() {
                 <motion.div
                   whileHover={{ scale: 1.03 }}
                   className="player-volume-box"
-                  style={{ display: 'flex', alignItems: 'center', gap: '6px' }}
+                  style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
                 >
                   <motion.button
                     whileHover={{ scale: 1.2, color: 'var(--accent-orange)' }}
@@ -1356,9 +1386,9 @@ export function MainDashboardApp() {
                     }}
                   >
                     {Number(volume) === 0 ? (
-                      <VolumeX size={18} color="var(--text-secondary)" />
+                      <VolumeX size={24} color="currentColor" />
                     ) : (
-                      <Volume2 size={18} color="var(--text-primary)" />
+                      <Volume2 size={24} color="currentColor" />
                     )}
                   </motion.button>
 
@@ -1373,14 +1403,16 @@ export function MainDashboardApp() {
                     className="player-inline-volume-slider"
                     title={`Volume: ${volume}%`}
                     style={{
-                      width: '42px',
-                      height: '4px',
+                      width: '80px',
+                      height: '6px',
                       accentColor: 'var(--accent-orange)',
-                      background: `linear-gradient(to right, var(--accent-orange) ${volume}%, rgba(255,255,255,0.15) ${volume}%)`,
+                      backgroundColor: 'transparent',
+                      background: `linear-gradient(to right, var(--accent-orange) ${volume}%, rgba(161, 161, 170, 0.45) ${volume}%)`,
                       borderRadius: '4px',
                       cursor: 'pointer',
                       outline: 'none',
-                      flexShrink: 0
+                      flexShrink: 0,
+                      WebkitAppearance: 'none'
                     }}
                   />
                 </motion.div>
@@ -1390,7 +1422,7 @@ export function MainDashboardApp() {
                   whileHover={{ scale: 1.2, color: 'var(--accent-orange)' }}
                   whileTap={{ scale: 0.85 }}
                   onClick={handlePrevTrack}
-                  style={{ border: 'none', background: 'transparent', color: 'var(--text-primary)', cursor: 'pointer', display: 'flex', alignItems: 'center' }}
+                  style={{ border: 'none', background: 'transparent', color: 'var(--text-secondary)', cursor: 'pointer', display: 'flex', alignItems: 'center' }}
                 >
                   <SkipBack size={20} />
                 </motion.button>
@@ -1403,7 +1435,7 @@ export function MainDashboardApp() {
                   onClick={() => setIsPlaying(!isPlaying)}
                   style={{
                     width: '40px', height: '40px', borderRadius: '50%', border: 'none',
-                    background: 'var(--text-primary)', color: 'var(--app-bg)', display: 'flex',
+                    background: 'var(--accent-orange)', color: '#ffffff', display: 'flex',
                     alignItems: 'center', justifyContent: 'center', cursor: 'pointer', flexShrink: 0
                   }}
                 >
@@ -1415,7 +1447,7 @@ export function MainDashboardApp() {
                   whileHover={{ scale: 1.2, color: 'var(--accent-orange)' }}
                   whileTap={{ scale: 0.85 }}
                   onClick={handleNextTrack}
-                  style={{ border: 'none', background: 'transparent', color: 'var(--text-primary)', cursor: 'pointer', display: 'flex', alignItems: 'center' }}
+                  style={{ border: 'none', background: 'transparent', color: 'var(--text-secondary)', cursor: 'pointer', display: 'flex', alignItems: 'center' }}
                 >
                   <SkipForward size={20} />
                 </motion.button>
@@ -1463,10 +1495,12 @@ export function MainDashboardApp() {
                     flex: 1,
                     height: '6px',
                     accentColor: 'var(--accent-orange)',
-                    background: `linear-gradient(to right, var(--accent-orange) ${audioProgress}%, rgba(255,255,255,0.1) ${audioProgress}%)`,
+                    backgroundColor: 'transparent',
+                    background: `linear-gradient(to right, var(--accent-orange) ${audioProgress}%, rgba(161, 161, 170, 0.45) ${audioProgress}%)`,
                     borderRadius: '4px',
                     cursor: 'pointer',
-                    outline: 'none'
+                    outline: 'none',
+                    WebkitAppearance: 'none'
                   }}
                 />
                 <span style={{ fontSize: '11px', fontWeight: 600, color: 'var(--text-muted)', minWidth: '34px' }}>
@@ -1480,17 +1514,36 @@ export function MainDashboardApp() {
         </div>
 
       </div>
-
-      <FaceScannerModal
-        isScanning={isScanning}
-        onCapture={handleCapture}
-        onClose={() => setIsScanning(false)}
-      />
     </div>
   );
 }
 
 export default function App() {
+  useEffect(() => {
+    const lenis = new Lenis({
+      duration: 1.2,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      direction: 'vertical',
+      gestureDirection: 'vertical',
+      smooth: true,
+      mouseMultiplier: 1,
+      smoothTouch: false,
+      touchMultiplier: 2,
+      infinite: false,
+    });
+
+    function raf(time) {
+      lenis.raf(time);
+      requestAnimationFrame(raf);
+    }
+
+    requestAnimationFrame(raf);
+
+    return () => {
+      lenis.destroy();
+    };
+  }, []);
+
   return (
     <AuthProvider>
       <RouteComponent />
